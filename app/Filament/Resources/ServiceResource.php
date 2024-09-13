@@ -2,48 +2,59 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\DeviceResource\Pages;
-use App\Filament\Resources\DeviceResource\RelationManagers;
+use App\Filament\Resources\ServiceResource\Pages;
+use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Models\Device;
+use App\Models\Service;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 
-class DeviceResource extends Resource
+class ServiceResource extends Resource
 {
-    protected static ?string $model = Device::class;
+    protected static ?string $model = Service::class;
     protected static ?string $navigationGroup = 'Resource Management';
-    protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('brand')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('model')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('serial')
-                    ->required()
-                    ->maxLength(255)
-                    ->default('S/N'),
                 Forms\Components\Select::make('type')
                     ->options([
-                        'Computadora' => 'Computadora',
-                        'Celular' => 'Celular'
+                        'SIVE' => 'SIVE',
+                        'Tecnico' => 'Tecnico'
                     ])
+                    ->required(),
+                Forms\Components\TextInput::make('report')
+                    ->required()
+                    ->maxLength(255),
+                Forms\Components\DatePicker::make('date_report')
                     ->required(),
                 Forms\Components\Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\Select::make('employee_id')
-                    ->relationship('employee', 'name'),
+                    ->relationship('employee', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->live()
+                    ->afterStateUpdated(fn (Set $set) => $set('device_id',null))
+                    ->required(),
+                Forms\Components\Select::make('device_id')
+                    ->options(fn (Get $get): Collection => Device::query()
+                        ->where('employee_id', $get('employee_id'))
+                        ->pluck('serial','id'))
+                    ->searchable()
+                    ->preload()
+                    ->live()
             ]);
     }
 
@@ -51,19 +62,19 @@ class DeviceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('brand')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('model')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('serial')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('report')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('date_report')
+                    ->date()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('employee.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('description')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('device.serial')
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -96,9 +107,9 @@ class DeviceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListDevices::route('/'),
-            'create' => Pages\CreateDevice::route('/create'),
-            'edit' => Pages\EditDevice::route('/{record}/edit'),
+            'index' => Pages\ListServices::route('/'),
+            'create' => Pages\CreateService::route('/create'),
+            'edit' => Pages\EditService::route('/{record}/edit'),
         ];
     }
 }

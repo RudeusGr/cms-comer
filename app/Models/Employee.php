@@ -19,4 +19,8 @@ class Employee extends Model
     public function device(): HasMany {
         return $this->hasMany(Device::class);
     }
+
+    public function service(): HasMany {
+        return $this->hasMany(Service::class);
+    }
 }
