@@ -17,7 +17,8 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 class DeviceResource extends Resource
 {
     protected static ?string $model = Device::class;
-    protected static ?string $navigationGroup = 'Resource Management';
+    protected static ?string $label = "Equipo";
+    protected static ?string $navigationGroup = 'Administracion de Recursos';
     protected static ?string $navigationIcon = 'heroicon-o-computer-desktop';
 
     public static function form(Form $form): Form
@@ -26,25 +27,31 @@ class DeviceResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('brand')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('Marca'),
                 Forms\Components\TextInput::make('model')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('Modelo'),
                 Forms\Components\TextInput::make('serial')
                     ->required()
                     ->maxLength(255)
-                    ->default('S/N'),
+                    ->default('S/N')
+                    ->label('N° Serie'),
                 Forms\Components\Select::make('type')
                     ->options([
                         'Computadora' => 'Computadora',
                         'Celular' => 'Celular'
                     ])
-                    ->required(),
+                    ->required()
+                    ->label('Tipo Equipo'),
                 Forms\Components\Textarea::make('description')
                     ->required()
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->label('Descripcion'),
                 Forms\Components\Select::make('employee_id')
-                    ->relationship('employee', 'name'),
+                    ->relationship('employee', 'name')
+                    ->label('Empleado'),
             ]);
     }
 
@@ -53,25 +60,33 @@ class DeviceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('brand')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Marca'),
                 Tables\Columns\TextColumn::make('model')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Modelo'),
                 Tables\Columns\TextColumn::make('serial')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('N° Serie'),
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Tipo Equipo'),
                 Tables\Columns\TextColumn::make('employee.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Empleado'),
                 Tables\Columns\TextColumn::make('description')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label('Descripcion'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Creado')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Modificado')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

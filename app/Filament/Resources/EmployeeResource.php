@@ -17,7 +17,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class EmployeeResource extends Resource
 {
     protected static ?string $model = Employee::class;
-    protected static ?string $navigationGroup = 'Company Management';
+    protected static ?string $label = "Empleado";
+    protected static ?string $navigationGroup = 'Administracion de Empresas';
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
     public static function form(Form $form): Form
@@ -26,12 +27,15 @@ class EmployeeResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('Nombre'),
                 Forms\Components\Select::make('department_id')
                     ->relationship('department', 'name')
-                    ->required(),
+                    ->required()
+                    ->label('Departamento'),
                 Forms\Components\Toggle::make('status')
-                    ->required(),
+                    ->required()
+                    ->label('Estado'),
             ]);
     }
 
@@ -40,19 +44,24 @@ class EmployeeResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Nombre'),
                 Tables\Columns\TextColumn::make('department.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Departamento'),
                 Tables\Columns\IconColumn::make('status')
-                    ->boolean(),
+                    ->boolean()
+                    ->label('Estado'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Creado')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Modificado')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

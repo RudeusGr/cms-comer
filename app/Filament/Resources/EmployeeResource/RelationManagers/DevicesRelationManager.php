@@ -9,9 +9,12 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use PhpParser\Node\Stmt\Label;
 
 class DevicesRelationManager extends RelationManager
 {
+    protected static ?string $label = 'Equipo';
+    protected static ?string $title = 'Equipo';
     protected static string $relationship = 'device';
 
     public function form(Form $form): Form
@@ -20,23 +23,28 @@ class DevicesRelationManager extends RelationManager
             ->schema([
                 Forms\Components\TextInput::make('brand')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->Label('Marca'),
                 Forms\Components\TextInput::make('model')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->Label('Modelo'),
                 Forms\Components\TextInput::make('serial')
                     ->required()
                     ->maxLength(255)
-                    ->default('S/N'),
+                    ->default('S/N')
+                    ->Label('N° Serie'),
                 Forms\Components\Select::make('type')
                     ->options([
                         'Computadora' => 'Computadora',
                         'Celular' => 'Celular'
                     ])
-                    ->required(),
+                    ->required()
+                    ->Label('Tipo Equipo'),
                 Forms\Components\Textarea::make('description')
                     ->required()
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->Label('Descripcion'),
             ]);
     }
 
@@ -45,22 +53,29 @@ class DevicesRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('brand')
             ->columns([
-                Tables\Columns\TextColumn::make('brand'),
+                Tables\Columns\TextColumn::make('brand')
+                    ->Label('Marca'),
                 Tables\Columns\TextColumn::make('model')
-                    ->searchable(),
+                    ->searchable()
+                    ->Label('Modelo'),
                 Tables\Columns\TextColumn::make('serial')
-                    ->searchable(),
+                    ->searchable()
+                    ->Label('N° Serie'),
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                    ->searchable()
+                    ->Label('Tipo Equipo'),
                 Tables\Columns\TextColumn::make('description')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->Label('Descripcion'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->Label('Creado')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
+                    ->Label('Modificado')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

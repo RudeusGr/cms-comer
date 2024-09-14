@@ -16,7 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class DepartmentResource extends Resource
 {
     protected static ?string $model = Department::class;
-    protected static ?string $navigationGroup = 'Company Management';
+    protected static ?string $label = "Departamento";
+    protected static ?string $navigationGroup = 'Administracion de Empresas';
     protected static ?string $navigationIcon = 'heroicon-s-share';
 
     public static function form(Form $form): Form
@@ -25,10 +26,12 @@ class DepartmentResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('Nombre'),
                 Forms\Components\Select::make('company_id')
                     ->relationship('company', 'name')
-                    ->required(),
+                    ->required()
+                    ->label('Empresa'),
             ]);
     }
 
@@ -37,17 +40,21 @@ class DepartmentResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Nombre'),
                 Tables\Columns\TextColumn::make('company.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Empresa'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Creado')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Modificado')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

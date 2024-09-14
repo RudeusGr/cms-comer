@@ -22,15 +22,16 @@ use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 class ServiceResource extends Resource
 {
     protected static ?string $model = Service::class;
-    protected static ?string $navigationGroup = 'Resource Management';
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $label = "Servicio";
+    protected static ?string $navigationGroup = 'Administracion de Recursos';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Section::make('General Information')
-                ->description('General information about the service performed by the user')
+                Section::make('Infomacion General')
+                ->description('Informacion general del servicio proporcionado por el usuario.')
                 ->icon('heroicon-m-document-text')
                 ->schema([
                     Forms\Components\Select::make('type')
@@ -38,17 +39,21 @@ class ServiceResource extends Resource
                         'SIVE' => 'SIVE',
                         'Tecnico' => 'Tecnico'
                     ])
-                    ->required(),
+                    ->required()
+                    ->label('Tipo Servicio'),
                     Forms\Components\TextInput::make('report')
                         ->required()
-                        ->maxLength(255),
+                        ->maxLength(255)
+                        ->label('Reporte'),
                     Forms\Components\DatePicker::make('date_report')
-                        ->required(),
+                        ->required()
+                        ->label('Fecha'),
                     Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name'),
+                    ->relationship('user', 'name')
+                    ->label('Tecnico'),
                 ])->columns(2),
-                Section::make('Details')
-                ->description('Specific details of the service that was performed')
+                Section::make('Detalles')
+                ->description('Detalles especificos del servicio brindado')
                 ->icon('heroicon-s-clipboard-document-list')
                 ->schema([
                     Forms\Components\Select::make('employee_id')
@@ -57,17 +62,20 @@ class ServiceResource extends Resource
                         ->preload()
                         ->live()
                         ->afterStateUpdated(fn (Set $set) => $set('device_id',null))
-                        ->required(),
+                        ->required()
+                        ->label('Empleado'),
                     Forms\Components\Select::make('device_id')
                         ->options(fn (Get $get): Collection => Device::query()
                             ->where('employee_id', $get('employee_id'))
                             ->pluck('serial','id'))
                         ->searchable()
                         ->preload()
-                        ->live(),
+                        ->live()
+                        ->label('Dispositivo'),
                     Forms\Components\Textarea::make('description')
                         ->required()
-                        ->columnSpanFull(),
+                        ->columnSpanFull()
+                        ->label('Descripcion'),
                 ])->columns(2)
             ]);
     }
@@ -77,27 +85,35 @@ class ServiceResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Tipo Servicio'),
                 Tables\Columns\TextColumn::make('report')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Reporte'),
                 Tables\Columns\TextColumn::make('date_report')
                     ->date()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Fecha'),
                 Tables\Columns\TextColumn::make('employee.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Empleado'),
                 Tables\Columns\TextColumn::make('device.serial')
-                    ->sortable(),
+                    ->sortable()
+                    ->label('N° Serial'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->label('Tecnico'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Creado')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Modificado')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([

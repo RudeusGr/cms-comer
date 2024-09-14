@@ -16,7 +16,8 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
-    protected static ?string $navigationGroup = 'Company Management';
+    protected static ?string $label = "Empresa";
+    protected static ?string $navigationGroup = 'Administracion de Empresas';
     protected static ?string $navigationIcon = 'heroicon-o-building-office-2';
 
     public static function form(Form $form): Form
@@ -25,7 +26,8 @@ class CompanyResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->label('Empresa'),
             ]);
     }
 
@@ -34,14 +36,17 @@ class CompanyResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->label('Empresa'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Creado')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
+                    ->label('Modificado')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
