@@ -7,6 +7,7 @@ use App\Filament\Resources\ServiceResource\RelationManagers;
 use App\Models\Device;
 use App\Models\Service;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -22,40 +23,52 @@ class ServiceResource extends Resource
 {
     protected static ?string $model = Service::class;
     protected static ?string $navigationGroup = 'Resource Management';
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('type')
+                Section::make('General Information')
+                ->description('General information about the service performed by the user')
+                ->icon('heroicon-m-document-text')
+                ->schema([
+                    Forms\Components\Select::make('type')
                     ->options([
                         'SIVE' => 'SIVE',
                         'Tecnico' => 'Tecnico'
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('report')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\DatePicker::make('date_report')
-                    ->required(),
-                Forms\Components\Textarea::make('description')
-                    ->required()
-                    ->columnSpanFull(),
-                Forms\Components\Select::make('employee_id')
-                    ->relationship('employee', 'name')
-                    ->searchable()
-                    ->preload()
-                    ->live()
-                    ->afterStateUpdated(fn (Set $set) => $set('device_id',null))
-                    ->required(),
-                Forms\Components\Select::make('device_id')
-                    ->options(fn (Get $get): Collection => Device::query()
-                        ->where('employee_id', $get('employee_id'))
-                        ->pluck('serial','id'))
-                    ->searchable()
-                    ->preload()
-                    ->live()
+                    Forms\Components\TextInput::make('report')
+                        ->required()
+                        ->maxLength(255),
+                    Forms\Components\DatePicker::make('date_report')
+                        ->required(),
+                    Forms\Components\Select::make('user_id')
+                    ->relationship('user', 'name'),
+                ])->columns(2),
+                Section::make('Details')
+                ->description('Specific details of the service that was performed')
+                ->icon('heroicon-s-clipboard-document-list')
+                ->schema([
+                    Forms\Components\Select::make('employee_id')
+                        ->relationship('employee', 'name')
+                        ->searchable()
+                        ->preload()
+                        ->live()
+                        ->afterStateUpdated(fn (Set $set) => $set('device_id',null))
+                        ->required(),
+                    Forms\Components\Select::make('device_id')
+                        ->options(fn (Get $get): Collection => Device::query()
+                            ->where('employee_id', $get('employee_id'))
+                            ->pluck('serial','id'))
+                        ->searchable()
+                        ->preload()
+                        ->live(),
+                    Forms\Components\Textarea::make('description')
+                        ->required()
+                        ->columnSpanFull(),
+                ])->columns(2)
             ]);
     }
 
@@ -74,6 +87,8 @@ class ServiceResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('device.serial')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
